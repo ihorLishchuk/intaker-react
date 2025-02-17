@@ -1,0 +1,5 @@
+{
+  "weatherAPI": "https://api.openweathermap.org/data/2.5/",
+  "weatherAPIKey": "25d8d687790a3fd9b4ffbf1b25eb2c73",
+  "units": "metric"
+}
