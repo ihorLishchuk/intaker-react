@@ -1,5 +1,6 @@
 import {useContext} from "react";
-import WidgetServiceContext from "./WidgetServiceContext.ts";
+
+import WidgetServiceContext from "../services/WidgetServiceContext.ts";
 
 const useWidgetService = () => {
     const context = useContext(WidgetServiceContext);

@@ -1,4 +1,5 @@
 import React from "react";
+
 import widgetService from "./WidgetService.ts";
 import WidgetServiceContext from './WidgetServiceContext.ts';
 

@@ -13,8 +13,6 @@ class WidgetService extends Subscriber {
         this.notifySubscribers();
     }
 
-    public showFavorites = false;
-
     public toggleFavourite = (index: number | undefined): void => {
         if (index !== undefined && this.widgets[index]) this.widgets[index] = { ...this.widgets[index], favourite: !this.widgets[index].favourite }
         this.widgets = [...this.widgets];

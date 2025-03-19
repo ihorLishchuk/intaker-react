@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 
 import SearchBar from "../search-bar/SearchBar.tsx";
@@ -25,14 +25,30 @@ const DialogSelectCity = (props: DialogSelectCityProps) => {
     }
 
     return (
-        <Dialog onClose={handleClose} open={open}>
+        <Dialog
+            onClose={handleClose}
+            open={open}
+            slotProps={{
+                paper: {
+                    component: 'form',
+                    onSubmit: (event: FormEvent<HTMLFormElement>) => {
+                        event.preventDefault();
+                        handleSelect();
+                    },
+                },
+            }}
+        >
             <DialogTitle>Type a city</DialogTitle>
-            <DialogContent>
-                <SearchBar onValueChanged={handleValue} />
+            <DialogContent sx={{
+                '&': {
+                    'padding-top': '.5rem !important'
+                }
+            }}>
+                <SearchBar onValueChanged={handleValue} required={true} />
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>Close</Button>
-                <Button onClick={handleSelect}>Select</Button>
+                <Button type="submit">Select</Button>
             </DialogActions>
         </Dialog>
     );

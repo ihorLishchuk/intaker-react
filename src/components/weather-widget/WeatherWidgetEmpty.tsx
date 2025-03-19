@@ -1,22 +1,20 @@
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import {Card, CardActionArea, CardContent} from "@mui/material";
 import {Add} from "@mui/icons-material";
 
-import DialogSelectCity from "../dialogs/DialogSelectCity.tsx";
-import useWeatherService from "../../services/weather.service.ts";
-import useWidgetService from "../../services/useWidgetService.ts";
+import DialogSelectCity from "../select-city/DialogSelectCity.tsx";
+
+import useWeatherService from "../../hooks/useWeatherService.ts";
+import useWidgetService from "../../hooks/useWidgetService.ts";
+import useSnackbar from "../../hooks/useSnackbar.ts";
+
 import {WidgetEntity} from "../../entities";
 
 const WeatherWidgetEmpty = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const { addNewWidget, hasDuplicates } = useWidgetService();
     const { getCurrentWeatherByCity, getNDaysForecast } = useWeatherService();
-
-    useCallback((cityName: string) => {
-        if (hasDuplicates(cityName)) {
-            // enqueueSnackbar(`You already have a widget with the city: ${cityName}`, { variant: "warning" });
-        }
-    }, [hasDuplicates, /*enqueueSnackbar*/]);
+    const { showSnackbar } = useSnackbar();
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
@@ -24,7 +22,10 @@ const WeatherWidgetEmpty = () => {
 
     const handleClose = async (city: string | null) => {
         setOpenDialog(false);
-        if (!city || hasDuplicates(city)) return;
+        if (!city) return;
+        if (hasDuplicates(city)) {
+            return showSnackbar(`You already have a widget with the city: ${city}`, 'warning');
+        }
 
         try {
             const [currentWeather, forecast] = await Promise.all([
@@ -39,9 +40,9 @@ const WeatherWidgetEmpty = () => {
             };
 
             addNewWidget(newWidget);
-            // enqueueSnackbar(`Widget added for ${city}`, { variant: "success" });
-        } catch (error) {
-            // enqueueSnackbar("Failed to fetch weather data", { variant: "error" });
+            showSnackbar(`Widget added for ${city}`, 'success');
+        } catch {
+            showSnackbar('Failed to fetch weather data', 'error');
         }
     };
 

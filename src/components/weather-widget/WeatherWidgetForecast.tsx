@@ -1,4 +1,5 @@
 import {Box} from "@mui/material";
+
 import {ForecastEntity} from "../../entities";
 import WeatherWidgetBasic from "./WeatherWidgetBasic.tsx";
 
@@ -13,7 +14,11 @@ const WeatherWidgetForecast = ({ forecast }: WeatherWidgetForecastProps) => {
             display: 'flex',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: '1rem'
+            gap: '1rem',
+            '& > .basic': {
+                flex: 1,
+                'min-width': '95px'
+            }
         }}>
             {forecastList}
         </Box>

@@ -1,11 +1,23 @@
+import React, {useEffect, useRef} from "react";
 import {TextField} from "@mui/material";
-import React from "react";
 
-const SearchBar = ({ onValueChanged }: { onValueChanged: (value: string) => void }) => {
+const SearchBar = ({ onValueChanged, required }: { onValueChanged: (value: string) => void, required: boolean }) => {
 
     const handleValueChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
         onValueChanged(event.target.value);
     }
+
+    const inputRef = useRef({} as HTMLInputElement);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            inputRef.current.focus();
+        });
+
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, []);
 
     return (
         <TextField
@@ -13,7 +25,9 @@ const SearchBar = ({ onValueChanged }: { onValueChanged: (value: string) => void
             label="Search by"
             type="search"
             size="small"
+            required={required}
             onChange={handleValueChanged}
+            inputRef={inputRef}
         />
     );
 }

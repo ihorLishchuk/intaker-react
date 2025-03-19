@@ -1,6 +1,8 @@
-import WeatherWidget from "./WeatherWidget.tsx";
 import {useEffect, useState} from "react";
-import useWidgetService from "../../services/useWidgetService.ts";
+
+import WeatherWidget from "./WeatherWidget.tsx";
+import useWidgetService from "../../hooks/useWidgetService.ts";
+
 import {WidgetEntity} from "../../entities";
 
 const WeatherWidgetList = ({ showFavorites }: { showFavorites: boolean }) => {

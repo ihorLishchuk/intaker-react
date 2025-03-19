@@ -2,14 +2,15 @@ import api from "../interceptors/setupApiIdInterceptor.ts";
 
 import { DEFAULT_FORECAST } from "../consts";
 import { CityEntity, CurrentWeatherEntity, ForecastEntity } from "../entities";
-import useAppConfig from "../hooks/useAppConfg.ts";
 
-interface WeatherService {
+import useAppConfig from "./useAppConfg.ts";
+
+interface UseWeatherService {
     getCurrentWeatherByCity: (cityName: string) => Promise<CurrentWeatherEntity>;
     getNDaysForecast: (city: Partial<CityEntity> & { cnt?: number }) => Promise<ForecastEntity>;
 }
 
-const useWeatherService = (): WeatherService => {
+const useWeatherService = (): UseWeatherService => {
     const { weatherAPI, units } = useAppConfig();
 
     const getCurrentWeatherByCity = async (cityName: string): Promise<CurrentWeatherEntity> => {
