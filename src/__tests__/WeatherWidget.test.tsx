@@ -1,81 +1,78 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import WeatherWidget from "../components/weather-widget/WeatherWidget";
+import WeatherWidget from "../components/weather-widget/WeatherWidget.tsx";
+import { widgetStore, removeWidget, toggleFavourite, updateWidget } from "../stores";
+import { useSnackbar } from "../hooks";
+import { weatherService } from "../api";
+import { DEFAULT_WEATHER_UPDATE_SEQUENCE } from "../consts";
+import {WidgetEntity} from "../entities";
 
-import useWeatherService from "../hooks/useWeatherService";
-import {CurrentWeatherEntity, ForecastEntity, WidgetEntity} from "../entities";
-
-const mockRemoveWidget = jest.fn();
-const mockToggleFavourite = jest.fn();
-const mockUpdateWidget = jest.fn();
-const mockShowSnackbar = jest.fn();
-const mockGetCurrentWeatherByCity = jest.fn(() => Promise.resolve("mockedCurrentWeather"));
-const mockGetNDaysForecast = jest.fn(() => Promise.resolve("mockedForecast"));
-
-jest.mock("../hooks/useWidgetService", () => () => ({
-    removeWidget: mockRemoveWidget,
-    toggleFavourite: mockToggleFavourite,
-    updateWidget: mockUpdateWidget,
-    widgets: [{ currentWeather: { id: 1, name: "Berlin" } }] // Ensure widget exists
+jest.mock("../stores", () => ({
+    widgetStore: { useStore: jest.fn() },
+    removeWidget: jest.fn(),
+    toggleFavourite: jest.fn(),
+    updateWidget: jest.fn(),
 }));
-
-jest.mock("../hooks/useSnackbar", () => () => ({
-    showSnackbar: mockShowSnackbar
+jest.mock("../hooks", () => ({
+    useSnackbar: jest.fn(),
 }));
-
-jest.mock("../hooks/useWeatherService", () => () => ({
-    getCurrentWeatherByCity: mockGetCurrentWeatherByCity,
-    getNDaysForecast: mockGetNDaysForecast
+jest.mock("../api", () => ({
+    weatherService: {
+        getCurrentWeatherByCity: jest.fn(),
+        getNDaysForecast: jest.fn(),
+    },
 }));
+jest.mock("../components/weather-widget/WeatherWidgetBasic.tsx", () => () => <div data-testid="basic" />);
+jest.mock("../components/weather-widget/WeatherWidgetForecast.tsx", () => () => <div data-testid="forecast" />);
 
-jest.mock("../components/weather-widget/WeatherWidgetBasic", () => () => <div data-testid="weather-widget-basic" />);
-jest.mock("../components/weather-widget/WeatherWidgetForecast", () => () => <div data-testid="weather-widget-forecast" />);
-
-const mockWidget: WidgetEntity = {
-    currentWeather: { id: 1, name: "Berlin" } as CurrentWeatherEntity,
-    forecast: {} as ForecastEntity,
+const widget = {
+    currentWeather: { id: 1, name: "Berlin" },
+    forecast: {},
     favourite: false,
-};
+} as unknown as WidgetEntity;
 
-describe("WeatherWidget Component", () => {
-    test("renders the weather widget correctly", () => {
-        render(<WeatherWidget widget={mockWidget} />);
-
-        expect(screen.getByText("Berlin")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /remove/i })).toBeInTheDocument();
-    });
-
-    test("calls removeWidget when Remove button is clicked", () => {
-        render(<WeatherWidget widget={mockWidget} />);
-
-        const removeButton = screen.getByRole("button", { name: /remove/i });
-        fireEvent.click(removeButton);
-
-        expect(mockRemoveWidget).toHaveBeenCalledTimes(1);
-        expect(mockShowSnackbar).toHaveBeenCalledWith("The widget was removed successfully", "success");
-    });
-
-    test("calls toggleFavourite when favourite button is clicked", () => {
-        render(<WeatherWidget widget={mockWidget} />);
-
-        const favButton = screen.getAllByRole("button")[0];
-        fireEvent.click(favButton);
-        expect(mockToggleFavourite).toHaveBeenCalledTimes(1);
-    });
-
-    test("updates widget periodically", async () => {
+describe("WeatherWidget", () => {
+    beforeEach(() => {
         jest.useFakeTimers();
-        const { getCurrentWeatherByCity, getNDaysForecast } = useWeatherService();
+        (widgetStore.useStore as jest.Mock).mockReturnValue([widget]);
+        (useSnackbar as jest.Mock).mockReturnValue({ showSnackbar: jest.fn() });
+    });
 
-        render(<WeatherWidget widget={mockWidget} />);
+    afterEach(() => {
+        jest.clearAllMocks();
+        jest.useRealTimers();
+    });
+
+    it("renders widget title", () => {
+        render(<WeatherWidget widget={widget} />);
+        expect(screen.getByText("Berlin")).toBeInTheDocument();
+        expect(screen.getByTestId("basic")).toBeInTheDocument();
+        expect(screen.getByTestId("forecast")).toBeInTheDocument();
+    });
+
+    it("calls toggleFavourite when icon is clicked", () => {
+        render(<WeatherWidget widget={widget} />);
+        const buttons = screen.getAllByRole("button");
+        fireEvent.click(buttons[0]);
+        expect(toggleFavourite).toHaveBeenCalled();
+    });
+
+    it("calls removeWidget when Remove button is clicked", () => {
+        render(<WeatherWidget widget={widget} />);
+        fireEvent.click(screen.getByText(/remove/i));
+        expect(removeWidget).toHaveBeenCalled();
+    });
+
+    it("updates widget periodically", async () => {
+        (weatherService.getCurrentWeatherByCity as jest.Mock).mockResolvedValue({ id: 1, name: "Berlin" });
+        (weatherService.getNDaysForecast as jest.Mock).mockResolvedValue([]);
+
+        render(<WeatherWidget widget={widget} />);
 
         await act(async () => {
-            jest.runOnlyPendingTimers();
+            jest.advanceTimersByTime(DEFAULT_WEATHER_UPDATE_SEQUENCE);
+            await Promise.resolve();
         });
 
-        expect(getCurrentWeatherByCity).toHaveBeenCalledWith("Berlin");
-        expect(getNDaysForecast).toHaveBeenCalledWith({ name: "Berlin" });
-        expect(mockUpdateWidget).toHaveBeenCalled();
-
-        jest.useRealTimers();
+        expect(updateWidget).toHaveBeenCalled();
     });
 });

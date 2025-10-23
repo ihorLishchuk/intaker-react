@@ -3,7 +3,7 @@ import {Alert, AlertColor, Snackbar} from "@mui/material";
 
 import SnackbarContext from "./SnackBarContext.ts";
 
-const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [{ open, message, severity }, setSnackbar] = useState<{
         open: boolean;
         message: string;
@@ -39,5 +39,3 @@ const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({ children })
         </SnackbarContext.Provider>
     );
 };
-
-export default SnackbarProvider;

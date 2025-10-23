@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MoreVert } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 
-import favoriteService from "../../services/FavoriteService.ts";
+import { toggleFavorites } from "../../stores";
 
 const Favourites = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -18,7 +18,7 @@ const Favourites = () => {
 
     const handleSelect = (value: boolean) => {
         setAnchorEl(null);
-        favoriteService.setValue(value);
+        toggleFavorites(value);
     };
 
     return (

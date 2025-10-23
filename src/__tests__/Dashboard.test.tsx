@@ -1,56 +1,33 @@
-
-import {fireEvent, render, screen} from "@testing-library/react";
-
-import SnackbarProvider from "../services/SnackBarProvider.tsx";
-import WidgetServiceProvider from "../services/WidgetServiceProvider.tsx";
+import { render, screen } from "@testing-library/react";
 import Dashboard from "../components/dashboard/Dashboard.tsx";
-import React from "react";
 
+jest.mock("../components/favourites/Favourites.tsx", () => () => (
+    <div data-testid="favourites-mock">FavouritesMock</div>
+));
+jest.mock("../components/weather-widget/WeatherWidgetList.tsx", () => () => (
+    <div data-testid="widget-list-mock">WeatherWidgetListMock</div>
+));
 jest.mock("../components/weather-widget/WeatherWidgetEmpty.tsx", () => () => (
-    <div data-testid="weather-widget-empty">WeatherWidgetEmpty</div>
+    <div data-testid="widget-empty-mock">WeatherWidgetEmptyMock</div>
 ));
 
-jest.mock("../components/weather-widget/WeatherWidgetList.tsx", () => ({ showFavorites }: { showFavorites: boolean }) => (
-    <div data-testid="weather-widget-list">WeatherWidgetList - {showFavorites ? "Favorites" : "All"}</div>
-));
-
-jest.mock("../components/favourites/Favourites.tsx", () => ({ stateRef, setShowFavorites }: { stateRef: { current: boolean }, setShowFavorites: React.Dispatch<React.SetStateAction<boolean>> }) => (
-    <button data-testid="toggle-favourites" onClick={() => {
-        stateRef.current = !stateRef.current;
-        setShowFavorites((prev: boolean) => !prev);
-    }}>
-        Toggle Favourites
-    </button>
-));
-
-const MockDashboard = () => (
-    <SnackbarProvider>
-        <WidgetServiceProvider>
-            <Dashboard />
-        </WidgetServiceProvider>
-    </SnackbarProvider>
-);
-
-describe("Dashboard Component", () => {
-    test("renders Dashboard correctly", () => {
-        render(<MockDashboard />);
-
+describe("Dashboard", () => {
+    it("renders the main title", () => {
+        render(<Dashboard />);
         expect(screen.getByRole("heading", { name: /dashboard/i })).toBeInTheDocument();
-        expect(screen.getByTestId("weather-widget-empty")).toBeInTheDocument();
-        expect(screen.getByTestId("weather-widget-list")).toBeInTheDocument();
-        expect(screen.getByTestId("toggle-favourites")).toBeInTheDocument();
     });
 
-    test("toggles favorites view when button is clicked", () => {
-        render(<MockDashboard />);
+    it("renders the AppBar with toolbar", () => {
+        render(<Dashboard />);
+        const title = screen.getByText(/dashboard/i);
+        expect(title.closest("header")).toBeInTheDocument();
+    });
 
-        const toggleButton = screen.getByRole("button", { name: /toggle favourites/i });
-        expect(screen.getByTestId("weather-widget-list")).toHaveTextContent("All");
+    it("renders Favourites, WidgetList, and WidgetEmpty sections", () => {
+        render(<Dashboard />);
 
-        fireEvent.click(toggleButton);
-        expect(screen.getByTestId("weather-widget-list")).toHaveTextContent("Favorites");
-
-        fireEvent.click(toggleButton);
-        expect(screen.getByTestId("weather-widget-list")).toHaveTextContent("All");
+        expect(screen.getByTestId("favourites-mock")).toBeInTheDocument();
+        expect(screen.getByTestId("widget-list-mock")).toBeInTheDocument();
+        expect(screen.getByTestId("widget-empty-mock")).toBeInTheDocument();
     });
 });

@@ -1,12 +1,7 @@
-import axios from 'axios';
-
+import { api } from "../api";
 import environmentJson from '../configs/environment.json';
 
-const api = axios.create({
-    baseURL: environmentJson.weatherAPI,
-});
-
-export const setupApiIdInterceptor = ({ weatherAPIKey }: typeof environmentJson) => {
+export const apiIdInterceptor = ({ weatherAPIKey }: typeof environmentJson) => {
     api.interceptors.request.use(
         (config) => {
             config.params = config.params || {};
@@ -16,5 +11,3 @@ export const setupApiIdInterceptor = ({ weatherAPIKey }: typeof environmentJson)
         (error) => Promise.reject(error)
     );
 };
-
-export default api;

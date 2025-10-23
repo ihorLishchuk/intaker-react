@@ -1,15 +1,13 @@
 import {useContext} from "react";
 
-import SnackbarContext from "../services/SnackBarContext.ts";
+import SnackbarContext from "./SnackBarContext.ts";
 
-import {SnackbarContextType} from "../entities";
+import {SnackbarContextType} from "../../entities";
 
-const useSnackbar = (): SnackbarContextType => {
+export const useSnackbar = (): SnackbarContextType => {
     const context = useContext(SnackbarContext);
     if (!context) {
         throw new Error("useSnackbar must be used within a SnackbarProvider");
     }
     return context;
 };
-
-export default useSnackbar;

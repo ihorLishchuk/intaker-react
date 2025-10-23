@@ -1,52 +1,36 @@
-import {createRef, RefObject} from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Favourites from "../components/favourites/Favourites.tsx";
+import { toggleFavorites } from "../stores";
 
-describe("Favourites Component", () => {
-    test("renders menu button", () => {
-        const stateRef = createRef<boolean>() as RefObject<boolean>;
-        const setShowFavorites = jest.fn();
+jest.mock("../stores", () => ({
+    toggleFavorites: jest.fn(),
+}));
 
-        render(<Favourites stateRef={stateRef} setShowFavorites={setShowFavorites} />);
-
-        const button = screen.getByRole("button", { name: /menu/i });
-        expect(button).toBeInTheDocument();
+describe("Favourites", () => {
+    it("renders the icon button", () => {
+        render(<Favourites />);
+        expect(screen.getByRole("button")).toBeInTheDocument();
     });
 
-    test("opens and closes the menu on button click", () => {
-        const stateRef = createRef<boolean>() as RefObject<boolean>;
-        const setShowFavorites = jest.fn();
-
-        render(<Favourites stateRef={stateRef} setShowFavorites={setShowFavorites} />);
-
-        const button = screen.getByRole("button", { name: /menu/i });
+    it("opens and closes the menu when clicking the icon", () => {
+        render(<Favourites />);
+        const button = screen.getByRole("button");
         fireEvent.click(button);
-
-        expect(screen.getByText("Favourite cities")).toBeInTheDocument();
-        expect(screen.getByText("All cities")).toBeInTheDocument();
+        expect(screen.getByRole("menu")).toBeInTheDocument();
+        fireEvent.click(document.body);
     });
 
-    test("selecting menu item updates state and calls setShowFavorites", () => {
-        const stateRef = createRef<boolean>() as RefObject<boolean>;
-        const setShowFavorites = jest.fn();
+    it("calls toggleFavorites with true when selecting Favourite cities", () => {
+        render(<Favourites />);
+        fireEvent.click(screen.getByRole("button"));
+        fireEvent.click(screen.getByText(/favourite cities/i));
+        expect(toggleFavorites).toHaveBeenCalledWith(true);
+    });
 
-        render(<Favourites stateRef={stateRef} setShowFavorites={setShowFavorites} />);
-
-        const button = screen.getByRole("button", { name: /menu/i });
-        fireEvent.click(button);
-
-        const favouriteCitiesOption = screen.getByText("Favourite cities");
-        fireEvent.click(favouriteCitiesOption);
-
-        expect(stateRef.current).toBe(true);
-        expect(setShowFavorites).toHaveBeenCalledTimes(1);
-
-        fireEvent.click(button);
-
-        const allCitiesOption = screen.getByText("All cities");
-        fireEvent.click(allCitiesOption);
-
-        expect(stateRef.current).toBe(false);
-        expect(setShowFavorites).toHaveBeenCalledTimes(2);
+    it("calls toggleFavorites with false when selecting All cities", () => {
+        render(<Favourites />);
+        fireEvent.click(screen.getByRole("button"));
+        fireEvent.click(screen.getByText(/all cities/i));
+        expect(toggleFavorites).toHaveBeenCalledWith(false);
     });
 });

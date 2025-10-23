@@ -1,5 +1,5 @@
-import {Typography} from "@mui/material";
-import {CurrentWeatherEntity, dateFormatOptions} from "../../entities";
+import { Typography } from "@mui/material";
+import { CurrentWeatherEntity, dateFormatOptions } from "../../entities";
 
 interface WeatherWidgetBasicProps {
     currentWeather: CurrentWeatherEntity

@@ -1,25 +1,25 @@
-import {useEffect} from "react";
-import {Button, Card, CardActions, CardContent, CardHeader, Divider, IconButton} from "@mui/material";
+import { useEffect } from "react";
+
+import { Button, Card, CardActions, CardContent, CardHeader, Divider, IconButton } from "@mui/material";
 import Favorite from "@mui/icons-material/Favorite";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 
-import {WidgetEntity} from "../../entities";
-import {DEFAULT_WEATHER_UPDATE_SEQUENCE} from "../../consts";
+import { WidgetEntity } from "../../entities";
+import { DEFAULT_WEATHER_UPDATE_SEQUENCE } from "../../consts";
+import { removeWidget, toggleFavourite, updateWidget, widgetStore } from "../../stores";
+import { useSnackbar } from "../../hooks";
+import { weatherService } from "../../api";
 
 import WeatherWidgetBasic from "./WeatherWidgetBasic.tsx";
 import WeatherWidgetForecast from "./WeatherWidgetForecast.tsx";
-
-import useWidgetService from "../../hooks/useWidgetService.ts";
-import useSnackbar from "../../hooks/useSnackbar.ts";
-import useWeatherService from "../../hooks/useWeatherService.ts";
 
 interface WeatherWidgetProps {
     widget: WidgetEntity;
 }
 
 const WeatherWidget = ({widget}: WeatherWidgetProps) => {
-    const { removeWidget, toggleFavourite, widgets, updateWidget } = useWidgetService();
-    const { getCurrentWeatherByCity, getNDaysForecast } = useWeatherService();
+    const widgets = widgetStore.useStore();
+    const { getCurrentWeatherByCity, getNDaysForecast } = weatherService;
     const { showSnackbar } = useSnackbar();
     const index = widgets.findIndex(sourceWidget => sourceWidget.currentWeather.id === widget.currentWeather.id);
 

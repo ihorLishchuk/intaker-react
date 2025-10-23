@@ -1,16 +1,16 @@
-import {lazy, Suspense} from "react";
-import {Navigate, Route, Routes} from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import './App.css'
-import {setupApiIdInterceptor} from "./interceptors/setupApiIdInterceptor.ts";
-import useAppConfig from "./hooks/useAppConfg.ts";
-import SnackbarProvider from "./services/SnackBarProvider.tsx";
+import { apiIdInterceptor } from "./interceptors";
+import { appConfig } from "./configs";
+import { SnackbarProvider } from "./hooks";
 
 const HomePage = lazy(() => import("./components/dashboard/Dashboard.tsx"));
 const NotFoundPage = lazy(() => import("./components/page-not-found/PageNotFound.tsx"));
 
 const App = () => {
-  setupApiIdInterceptor(useAppConfig());
+  apiIdInterceptor(appConfig);
 
   return (
       <SnackbarProvider>

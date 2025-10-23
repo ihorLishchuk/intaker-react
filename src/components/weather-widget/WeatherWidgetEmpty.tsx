@@ -1,19 +1,17 @@
-import {useState} from "react";
-import {Card, CardActionArea, CardContent} from "@mui/material";
-import {Add} from "@mui/icons-material";
+import { useState } from "react";
+import { Card, CardActionArea, CardContent } from "@mui/material";
+import { Add } from "@mui/icons-material";
+
+import { useSnackbar } from "../../hooks";
+import { WidgetEntity } from "../../entities";
+import { addNewWidget, hasDuplicates } from "../../stores";
+import { weatherService } from "../../api";
 
 import DialogSelectCity from "../select-city/DialogSelectCity.tsx";
 
-import useWeatherService from "../../hooks/useWeatherService.ts";
-import useWidgetService from "../../hooks/useWidgetService.ts";
-import useSnackbar from "../../hooks/useSnackbar.ts";
-
-import {WidgetEntity} from "../../entities";
-
 const WeatherWidgetEmpty = () => {
     const [openDialog, setOpenDialog] = useState(false);
-    const { addNewWidget, hasDuplicates } = useWidgetService();
-    const { getCurrentWeatherByCity, getNDaysForecast } = useWeatherService();
+    const { getCurrentWeatherByCity, getNDaysForecast } = weatherService;
     const { showSnackbar } = useSnackbar();
 
     const handleOpenDialog = () => {

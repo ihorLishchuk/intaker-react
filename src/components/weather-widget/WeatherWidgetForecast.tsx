@@ -1,6 +1,6 @@
-import {Box} from "@mui/material";
+import { Box } from "@mui/material";
 
-import {ForecastEntity} from "../../entities";
+import { ForecastEntity } from "../../entities";
 import WeatherWidgetBasic from "./WeatherWidgetBasic.tsx";
 
 interface WeatherWidgetForecastProps {
