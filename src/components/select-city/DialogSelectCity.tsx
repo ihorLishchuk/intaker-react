@@ -41,7 +41,7 @@ const DialogSelectCity = (props: DialogSelectCityProps) => {
             <DialogTitle>Type a city</DialogTitle>
             <DialogContent sx={{
                 '&': {
-                    'padding-top': '.5rem !important'
+                    paddingTop: '.5rem !important'
                 }
             }}>
                 <SearchBar onValueChanged={handleValue} required={true} />

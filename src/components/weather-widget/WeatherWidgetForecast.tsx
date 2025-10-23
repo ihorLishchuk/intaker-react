@@ -17,7 +17,7 @@ const WeatherWidgetForecast = ({ forecast }: WeatherWidgetForecastProps) => {
             gap: '1rem',
             '& > .basic': {
                 flex: 1,
-                'min-width': '95px'
+                minWidth: '95px'
             }
         }}>
             {forecastList}
