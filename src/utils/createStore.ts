@@ -16,7 +16,7 @@ export function createStore<T>(initialValue: T) {
         listeners.forEach(fn => fn());
     };
 
-    const useStore = () => useSyncExternalStore(subscribe, getSnapshot);
+    const useStore = () => useSyncExternalStore<T>(subscribe, getSnapshot);
 
     return { get: getSnapshot, set: setState, useStore, subscribe };
 }
